@@ -2,13 +2,14 @@ const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+
+dotenv.config();
+
 const connectDB = require('./config/db');
 const orderRoutes = require('./routes/orderRoutes');
 const productRoutes = require('./routes/productRoutes');
 const authRoutes = require('./routes/auth');
 const protectedRoutes = require('./routes/protected');
-
-dotenv.config();
 connectDB();
 
 const app = express();
