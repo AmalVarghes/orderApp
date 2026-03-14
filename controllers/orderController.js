@@ -36,7 +36,7 @@ exports.getOrders = async (req, res) => {
 
 exports.sendOrderEmail = async (req, res) => {
   try {
-    const { items = [], total = 0, customerName = '', to } = req.body || {};
+    const { items = [], total = 0, customerName = '', customerMobile = '', to } = req.body || {};
 
     if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
       return res.status(500).json({ error: 'SMTP credentials not configured' });
@@ -56,6 +56,7 @@ exports.sendOrderEmail = async (req, res) => {
     const message = [
       'New Prebook Order',
       customerName ? `Customer: ${customerName}` : null,
+      customerMobile ? `Phone: ${customerMobile}` : null,
       '',
       'Items:',
       itemLines || 'No items',
@@ -75,4 +76,3 @@ exports.sendOrderEmail = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
-

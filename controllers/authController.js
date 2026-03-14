@@ -52,3 +52,55 @@ exports.register = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
+
+// Get User Profile
+exports.getProfile = async (req, res) => {
+    const username = req.query.username || req.body.username || req.user?.username;
+
+    if (!username) {
+        return res.status(400).json({ message: 'Username required' });
+    }
+
+    try {
+        const user = await User.findOne({ username }).select('username fullName mobile');
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json({ user });
+    } catch (err) {
+        console.error('Error fetching profile:', err);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// Update User Profile
+exports.updateProfile = async (req, res) => {
+    const { username, fullName, mobile } = req.body;
+    const resolvedUsername = req.user?.username || username;
+
+    if (!resolvedUsername) {
+        return res.status(400).json({ message: 'Username required' });
+    }
+
+    const update = {};
+    if (fullName !== undefined) update.fullName = fullName;
+    if (mobile !== undefined) update.mobile = mobile;
+
+    try {
+        const user = await User.findOneAndUpdate(
+            { username: resolvedUsername },
+            { $set: update },
+            { new: true, select: 'username fullName mobile' }
+        );
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json({ message: 'Profile updated', user });
+    } catch (err) {
+        console.error('Error updating profile:', err);
+        res.status(500).json({ message: 'Server error' });
+    }
+};

@@ -11,6 +11,14 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  fullName: {
+    type: String,
+    default: '',
+  },
+  mobile: {
+    type: String,
+    default: '',
+  },
 });
 
 // Hash password before saving
