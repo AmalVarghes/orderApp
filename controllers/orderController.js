@@ -3,8 +3,8 @@ const Order = require('../models/Order');
 const nodemailer = require('nodemailer');
 
 const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
-const smtpPort = process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 465;
-const smtpSecure = process.env.SMTP_SECURE ? process.env.SMTP_SECURE === 'true' : smtpPort === 465;
+const smtpPort = process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 587;
+const smtpSecure = process.env.SMTP_SECURE ? process.env.SMTP_SECURE === 'true' : smtpPort === 587;
 
 const transporter = nodemailer.createTransport({
   host: smtpHost,
