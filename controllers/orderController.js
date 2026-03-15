@@ -9,11 +9,16 @@ const smtpSecure = process.env.SMTP_SECURE ? process.env.SMTP_SECURE === 'true' 
 const transporter = nodemailer.createTransport({
   host: smtpHost,
   port: smtpPort,
-  secure: smtpSecure,
+  // secure: smtpSecure,
+  secure: false, // TLS
+  requireTLS: true,
   family: 4,
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
+  },
+  tls: {
+    rejectUnauthorized: false
   },
   connectionTimeout: 10000,
   greetingTimeout: 10000,
