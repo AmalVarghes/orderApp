@@ -14,6 +14,17 @@ const transporter = nodemailer.createTransport({
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 10000,
+});
+
+transporter.verify((error, success) => {
+  if (error) {
+    console.log("SMTP ERROR:", error);
+  } else {
+    console.log("SMTP SERVER READY");
+  }
 });
 
 exports.createOrder = async (req, res) => {
@@ -35,6 +46,8 @@ exports.getOrders = async (req, res) => {
 };
 
 exports.sendOrderEmail = async (req, res) => {
+  console.log("EMAIL API HIT");
+  console.log("Payload:", req.body);
   try {
     const { items = [], total = 0, customerName = '', customerMobile = '', to } = req.body || {};
 
