@@ -7,19 +7,20 @@ const smtpPort = process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 587;
 const smtpSecure = process.env.SMTP_SECURE ? process.env.SMTP_SECURE === 'true' : smtpPort === 587;
 
 const transporter = nodemailer.createTransport({
-  host: smtpHost,
-  port: smtpPort,
+  // host: smtpHost,
+  service: "gmail",
+  // port: smtpPort,
   // secure: smtpSecure,
-  secure: false, // TLS
-  requireTLS: true,
-  family: 4,
+  // secure: false, // TLS
+  // requireTLS: true,
+  // family: 4,
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
-  tls: {
-    rejectUnauthorized: false
-  },
+  // tls: {
+  //   rejectUnauthorized: false
+  // },
   connectionTimeout: 10000,
   greetingTimeout: 10000,
   socketTimeout: 10000,
