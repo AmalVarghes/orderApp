@@ -1,38 +1,38 @@
 const Order = require('../models/Order');
-
+const axios = require('axios');
 const nodemailer = require('nodemailer');
 
 const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
 const smtpPort = process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 587;
 const smtpSecure = process.env.SMTP_SECURE ? process.env.SMTP_SECURE === 'true' : smtpPort === 587;
 
-const transporter = nodemailer.createTransport({
-  // host: smtpHost,
-  service: "gmail",
-  // port: smtpPort,
-  // secure: smtpSecure,
-  // secure: false, // TLS
-  // requireTLS: true,
-  // family: 4,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-  // tls: {
-  //   rejectUnauthorized: false
-  // },
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 10000,
-});
+// const transporter = nodemailer.createTransport({
+//   // host: smtpHost,
+//   service: "gmail",
+//   // port: smtpPort,
+//   // secure: smtpSecure,
+//   // secure: false, // TLS
+//   // requireTLS: true,
+//   // family: 4,
+//   auth: {
+//     user: process.env.SMTP_USER,
+//     pass: process.env.SMTP_PASS,
+//   },
+//   // tls: {
+//   //   rejectUnauthorized: false
+//   // },
+//   connectionTimeout: 10000,
+//   greetingTimeout: 10000,
+//   socketTimeout: 10000,
+// });
 
-transporter.verify((error, success) => {
-  if (error) {
-    console.log("SMTP ERROR:", error);
-  } else {
-    console.log("SMTP SERVER READY");
-  }
-});
+// transporter.verify((error, success) => {
+//   if (error) {
+//     console.log("SMTP ERROR:", error);
+//   } else {
+//     console.log("SMTP SERVER READY");
+//   }
+// });
 
 exports.createOrder = async (req, res) => {
   try {
@@ -56,11 +56,13 @@ exports.sendOrderEmail = async (req, res) => {
   console.log("EMAIL API HIT");
   console.log("Payload:", req.body);
   try {
+    const BOT_TOKEN = "8730223262:AAHeER7pEyJfndGe7fgd8BKz2y6eUz-5u1U";
+    const CHAT_ID = "8702411689";
     const { items = [], total = 0, customerName = '', customerMobile = '', to } = req.body || {};
 
-    if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-      return res.status(500).json({ error: 'SMTP credentials not configured' });
-    }
+    // if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    //   return res.status(500).json({ error: 'SMTP credentials not configured' });
+    // }
 
     const recipient = to || process.env.ORDER_NOTIFY_EMAIL || process.env.SMTP_USER;
 
@@ -74,7 +76,7 @@ exports.sendOrderEmail = async (req, res) => {
       .join('\n');
 
     const message = [
-      'New Prebook Order',
+      `New Prebook Order from ${customerName}`,
       customerName ? `Customer: ${customerName}` : null,
       customerMobile ? `Phone: ${customerMobile}` : null,
       '',
@@ -84,13 +86,16 @@ exports.sendOrderEmail = async (req, res) => {
       `Total: ₹${total}`,
     ].filter(Boolean).join('\n');
 
-    await transporter.sendMail({
-      from: process.env.SMTP_FROM || process.env.SMTP_USER,
-      to: recipient,
-      subject: 'New Prebook Order',
-      text: message,
+    // await transporter.sendMail({
+    //   from: process.env.SMTP_FROM || process.env.SMTP_USER,
+    //   to: recipient,
+    //   subject: 'New Prebook Order',
+    //   text: message,
+    // });
+    await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,{
+      chat_id: CHAT_ID,
+      text: message
     });
-
     return res.status(200).json({ success: true });
   } catch (error) {
     return res.status(500).json({ error: error.message });
